@@ -1,0 +1,644 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: dark)"><meta name="generator" content="Hexo 6.2.0">
+
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.1.1/css/all.min.css" integrity="sha256-DfWjNxDkM94fVBWx1H5BMMp0Zq7luBlV8QRcSES7s+0=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css" integrity="sha256-Vzbj7sDDS/woiFS3uNKo8eIuni59rjyNGtXfstRzStA=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"blog.zhaojinxi.top","root":"/","images":"/images","scheme":"Gemini","darkmode":true,"version":"8.12.2","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":{"enable":true,"style":"flat"},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":true,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="下一篇：浅谈底层常数优化及 CPU 优化 注：阅读本文可能需要有汇编语言基础。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="浅谈底层常数优化及编译器优化">
+<meta property="og:url" content="http://blog.zhaojinxi.top/2020/02/03/qian-tan-di-ceng-chang-shu-you-hua-ji-bian-yi-qi-you-hua/">
+<meta property="og:site_name" content="zhjxaoini&#39;s Blog">
+<meta property="og:description" content="下一篇：浅谈底层常数优化及 CPU 优化 注：阅读本文可能需要有汇编语言基础。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://blog.zhaojinxi.top/images/emoji/5.gif">
+<meta property="article:published_time" content="2020-02-03T01:26:39.000Z">
+<meta property="article:modified_time" content="2022-07-07T05:25:55.953Z">
+<meta property="article:author" content="zhjxaoini">
+<meta property="article:tag" content="OI">
+<meta property="article:tag" content="优化">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://blog.zhaojinxi.top/images/emoji/5.gif">
+
+
+<link rel="canonical" href="http://blog.zhaojinxi.top/2020/02/03/qian-tan-di-ceng-chang-shu-you-hua-ji-bian-yi-qi-you-hua/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"http://blog.zhaojinxi.top/2020/02/03/qian-tan-di-ceng-chang-shu-you-hua-ji-bian-yi-qi-you-hua/","path":"2020/02/03/qian-tan-di-ceng-chang-shu-you-hua-ji-bian-yi-qi-you-hua/","title":"浅谈底层常数优化及编译器优化"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>浅谈底层常数优化及编译器优化 | zhjxaoini's Blog</title>
+  
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">zhjxaoini's Blog</p>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">3</span></a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类<span class="badge">2</span></a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">5</span></a></li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%B5%8B%E8%AF%95%E7%8E%AF%E5%A2%83"><span class="nav-number">1.</span> <span class="nav-text">测试环境</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%B9%98%E6%B3%95%E4%BC%98%E5%8C%96"><span class="nav-number">2.</span> <span class="nav-text">乘法优化</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E9%99%A4%E6%B3%95%E4%BC%98%E5%8C%96"><span class="nav-number">3.</span> <span class="nav-text">除法优化</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%8F%96%E6%A8%A1%E4%BC%98%E5%8C%96"><span class="nav-number">4.</span> <span class="nav-text">取模优化</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#if-else-%E8%AF%AD%E5%8F%A5%E5%92%8C-%E8%BF%90%E7%AE%97%E7%AC%A6"><span class="nav-number">5.</span> <span class="nav-text">if-else 语句和 ?: 运算符</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%9F%AD%E8%B7%AF%E8%A1%A8%E8%BE%BE%E5%BC%8F%E4%BC%98%E5%8C%96"><span class="nav-number">6.</span> <span class="nav-text">短路表达式优化</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E8%87%AA%E5%A2%9E%E8%87%AA%E5%87%8F%E8%BF%90%E7%AE%97%E7%AC%A6%E4%BC%98%E5%8C%96"><span class="nav-number">7.</span> <span class="nav-text">自增自减运算符优化</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#register-%E4%BC%98%E5%8C%96"><span class="nav-number">8.</span> <span class="nav-text">register 优化</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#inline-%E4%BC%98%E5%8C%96"><span class="nav-number">9.</span> <span class="nav-text">inline 优化</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%86%85%E8%81%94%E6%B1%87%E7%BC%96"><span class="nav-number">10.</span> <span class="nav-text">内联汇编</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%BF%AB%E9%80%9F%E4%B9%98"><span class="nav-number">10.1.</span> <span class="nav-text">快速乘</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%89%A9%E6%A0%88"><span class="nav-number">10.2.</span> <span class="nav-text">扩栈</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%80%BB%E7%BB%93"><span class="nav-number">11.</span> <span class="nav-text">总结</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="zhjxaoini"
+      src="/images/avatar.png">
+  <p class="site-author-name" itemprop="name">zhjxaoini</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">5</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">2</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">3</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="mailto:zhjxaoini@outlook.com" title="E-Mail → mailto:zhjxaoini@outlook.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://www.luogu.com.cn/user/120026" title="Luogu → https:&#x2F;&#x2F;www.luogu.com.cn&#x2F;user&#x2F;120026" rel="noopener" target="_blank"><i class="fa fa-code fa-fw"></i>Luogu</a>
+      </span>
+  </div>
+  <div class="cc-license site-overview-item animated" itemprop="license">
+    <a href="https://creativecommons.org/licenses/by-nc-nd/4.0/deed.zh" class="cc-opacity" rel="noopener" target="_blank"><img src="https://cdn.jsdelivr.net/npm/@creativecommons/vocabulary@2020.11.3/assets/license_badges/small/by_nc_nd.svg" alt="Creative Commons"></a>
+  </div>
+
+
+
+        </div>
+      </div>
+        <div class="back-to-top animated" role="button" aria-label="返回顶部">
+          <i class="fa fa-arrow-up"></i>
+          <span>0%</span>
+        </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="reading-progress-bar"></div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://blog.zhaojinxi.top/2020/02/03/qian-tan-di-ceng-chang-shu-you-hua-ji-bian-yi-qi-you-hua/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.png">
+      <meta itemprop="name" content="zhjxaoini">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="zhjxaoini's Blog">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="浅谈底层常数优化及编译器优化 | zhjxaoini's Blog">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          浅谈底层常数优化及编译器优化
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2020-02-03 09:26:39" itemprop="dateCreated datePublished" datetime="2020-02-03T09:26:39+08:00">2020-02-03</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E7%AC%94%E8%AE%B0/" itemprop="url" rel="index"><span itemprop="name">笔记</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <p>下一篇：<a
+href="/2021/02/22/qian-tan-di-ceng-chang-shu-you-hua-ji-CPU-you-hua/">浅谈底层常数优化及
+CPU 优化</a></p>
+<p><strong>注：阅读本文可能需要有汇编语言基础。</strong></p>
+<span id="more"></span>
+<h1 id="测试环境">测试环境</h1>
+<p>操作系统：Ubuntu 18.04.3 LTS<br />
+内核版本：Linux 5.3.0-59-generic<br />
+编译器版本：g++ 7.4.0</p>
+<h1 id="乘法优化">乘法优化</h1>
+<p>考虑这样两段代码：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;cstdio&gt;</span></span></span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">main</span> <span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="type">int</span> x;</span><br><span class="line">    <span class="built_in">scanf</span> (<span class="string">&quot;%d&quot;</span>, &amp;x);</span><br><span class="line">    x *= <span class="number">2</span>;</span><br><span class="line">    <span class="built_in">printf</span> (<span class="string">&quot;%d&quot;</span>, x);</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;cstdio&gt;</span></span></span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">main</span> <span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="type">int</span> x;</span><br><span class="line">    <span class="built_in">scanf</span> (<span class="string">&quot;%d&quot;</span>, &amp;x);</span><br><span class="line">    x &lt;&lt;= <span class="number">1</span>;</span><br><span class="line">    <span class="built_in">printf</span> (<span class="string">&quot;%d&quot;</span>, x);</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>可能有人觉得第二段代码快一些，实际上呢？</p>
+<p>汇编代码是完全一样的！<code>x *= 2</code> 和
+<code>x &lt;&lt;= 1</code> 的汇编代码为：</p>
+<figure class="highlight x86asm"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">movl	-<span class="number">12</span>(%rbp), %eax</span><br><span class="line">addl	%eax, %eax</span><br><span class="line">movl	%eax, -<span class="number">12</span>(%rbp)</span><br></pre></td></tr></table></figure>
+<p>即 <code>x += x</code>。</p>
+<p>而 <code>x *= 4</code> 的汇编代码与 <code>x &lt;&lt;= 2</code>
+的汇编代码也是一样的，都为直接左移。</p>
+<p>如果乘数不是 2 的整数次幂呢？</p>
+<p>例如在快读中经常使用的 <code>x *= 10</code>：</p>
+<figure class="highlight x86asm"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">movl	-<span class="number">12</span>(%rbp), %edx</span><br><span class="line">movl	%edx, %eax</span><br><span class="line">sall	<span class="number">$2</span>, %eax</span><br><span class="line">addl	%edx, %eax</span><br><span class="line">addl	%eax, %eax</span><br><span class="line">movl	%eax, -<span class="number">12</span>(%rbp)</span><br></pre></td></tr></table></figure>
+<p>相当于：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">int</span> y = x;</span><br><span class="line">y &lt;&lt;= <span class="number">2</span>;</span><br><span class="line">y += x;</span><br><span class="line">y += y;</span><br><span class="line">x = y;</span><br></pre></td></tr></table></figure>
+<p>而在开启 O2 优化后的汇编代码为：</p>
+<figure class="highlight x86asm"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">movl	<span class="number">4</span>(%rsp), %eax</span><br><span class="line">leal	(%rax,%rax,<span class="number">4</span>), %edx</span><br><span class="line">addl	%edx, %edx</span><br><span class="line">movl	%edx, <span class="number">4</span>(%rsp)</span><br></pre></td></tr></table></figure>
+<p>这就相当于：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">x = x + x * <span class="number">4</span>;</span><br><span class="line">x += x;</span><br></pre></td></tr></table></figure>
+<p>那 <code>x = (x &lt;&lt; 3) + (x &lt;&lt; 1)</code> 呢？</p>
+<figure class="highlight x86asm"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">movl	-<span class="number">12</span>(%rbp), %eax</span><br><span class="line">leal	<span class="number">0</span>(,%rax,<span class="number">8</span>), %edx</span><br><span class="line">movl	-<span class="number">12</span>(%rbp), %eax</span><br><span class="line">addl	%eax, %eax</span><br><span class="line">addl	%edx, %eax</span><br><span class="line">movl	%eax, -<span class="number">12</span>(%rbp)</span><br></pre></td></tr></table></figure>
+<p>这几条指令就相当于是：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">int</span> y = x * <span class="number">8</span>;</span><br><span class="line">x += x;</span><br><span class="line">x += y;</span><br></pre></td></tr></table></figure>
+<p>注意到汇编代码中第 1 行和第 3 行两次从内存中读取数据到寄存器
+eax，而第 2 行的命令并没有修改寄存器 eax 的值，所以第 3
+行的命令没有任何作用，这就会降低效率。</p>
+<p>开了 O2 优化之后：</p>
+<figure class="highlight x86asm"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">movl	<span class="number">4</span>(%rsp), %eax</span><br><span class="line">leal	(%rax,%rax), %edx</span><br><span class="line">leal	(%rdx,%rax,<span class="number">8</span>), %edx</span><br><span class="line">movl	%edx, <span class="number">4</span>(%rsp)</span><br></pre></td></tr></table></figure>
+<p>也就是：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">int</span> y = x + x;</span><br><span class="line">x = y + x * <span class="number">8</span>;</span><br></pre></td></tr></table></figure>
+<p>这三行汇编代码与不开 O2
+优化的代码相比区别不是很大，但这里没有重复从内存中读取数据。</p>
+<h1 id="除法优化">除法优化</h1>
+<p>有两段代码：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;cstdio&gt;</span></span></span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">main</span> <span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="type">unsigned</span> x;</span><br><span class="line">    <span class="built_in">scanf</span> (<span class="string">&quot;%u&quot;</span>, &amp;x);</span><br><span class="line">    x /= <span class="number">2</span>;</span><br><span class="line">    <span class="built_in">printf</span> (<span class="string">&quot;%u&quot;</span>, x);</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;cstdio&gt;</span></span></span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">main</span> <span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="type">unsigned</span> x;</span><br><span class="line">    <span class="built_in">scanf</span> (<span class="string">&quot;%u&quot;</span>, &amp;x);</span><br><span class="line">    x &gt;&gt;= <span class="number">1</span>;</span><br><span class="line">    <span class="built_in">printf</span> (<span class="string">&quot;%u&quot;</span>, x);</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>它们是等价的，汇编代码一样：</p>
+<figure class="highlight x86asm"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">movl	-<span class="number">12</span>(%rbp), %eax</span><br><span class="line">shrl	%eax</span><br><span class="line">movl	%eax, -<span class="number">12</span>(%rbp)</span><br></pre></td></tr></table></figure>
+<p>因为 x 是无符号整型，所以除以 2
+可以直接右移，但有符号数就不一样了，考虑这样的代码：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;cstdio&gt;</span></span></span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">main</span> <span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="type">int</span> x;</span><br><span class="line">    <span class="built_in">scanf</span> (<span class="string">&quot;%d&quot;</span>, &amp;x);</span><br><span class="line">    x &gt;&gt;= <span class="number">1</span>;</span><br><span class="line">    <span class="built_in">printf</span> (<span class="string">&quot;%d&quot;</span>, x);</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;cstdio&gt;</span></span></span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">main</span> <span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="type">int</span> x;</span><br><span class="line">    <span class="built_in">scanf</span> (<span class="string">&quot;%d&quot;</span>, &amp;x);</span><br><span class="line">    x /= <span class="number">2</span>;</span><br><span class="line">    <span class="built_in">printf</span> (<span class="string">&quot;%d&quot;</span>, x);</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>第一段代码中 <code>x &gt;&gt;= 1</code>
+的汇编代码与无符号整型右移的汇编代码几乎一样，只是把逻辑右移改为了算数右移，但第二段代码中
+<code>x /= 2</code> 的汇编代码多了 3 行：</p>
+<figure class="highlight diff"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"> movl	-12(%rbp), %eax</span><br><span class="line"><span class="addition">+movl	%eax, %edx</span></span><br><span class="line"><span class="addition">+shrl	$31, %edx</span></span><br><span class="line"><span class="addition">+addl	%edx, %eax</span></span><br><span class="line"> sarl	%eax</span><br><span class="line"> movl	%eax, -12(%rbp)</span><br></pre></td></tr></table></figure>
+<p>这段代码相当于：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">int</span> y = x;</span><br><span class="line">y = (<span class="type">unsigned</span>)y &gt;&gt; <span class="number">31</span>;</span><br><span class="line">x += y;</span><br><span class="line">x &gt;&gt;= <span class="number">1</span>;</span><br></pre></td></tr></table></figure>
+<p>因为当 x 为负数时，<code>x &gt;&gt; 1</code> 和 <code>x / 2</code>
+并不等价。例如当 x = -5 时，<code>x &gt;&gt; 1</code> 的结果为 -3，而
+<code>x / 2</code> 的结果为
+-2，所以有符号数的除法需要编译器做额外的修正。</p>
+<p>如果除数不是 2 的整数次幂呢？</p>
+<p>因为做除法的代价很高，所以编译器还会想办法优化。</p>
+<p>下面是 <code>x /= 3</code> 的汇编代码（x 为有符号整型）：</p>
+<figure class="highlight x86asm"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">movl	-<span class="number">12</span>(%rbp), %ecx</span><br><span class="line">movl	<span class="number">$1431655766</span>, %edx</span><br><span class="line">movl	%ecx, %eax</span><br><span class="line">imull	%edx</span><br><span class="line">movl	%ecx, %eax</span><br><span class="line">sarl	<span class="number">$31</span>, %eax</span><br><span class="line">subl	%eax, %edx</span><br><span class="line">movl	%edx, %eax</span><br><span class="line">movl	%eax, -<span class="number">12</span>(%rbp)</span><br></pre></td></tr></table></figure>
+<p>注意到其中有一个常数 1431655766，这就是编译器对除法的优化。因为 <span
+class="math inline">\(1431655766 \times 3 - 2 = 4294967296 =
+2^{32}\)</span>，所以 1431655766 大约是 <span
+class="math inline">\(2^{32}\)</span> 的 <span
+class="math inline">\(\dfrac{1}{3}\)</span>，那么除以 3 就等价于乘
+1431655766 后取高 32 位，再进行修正。</p>
+<p><del>而无符号数又玄学一些。</del> 下面是 x 为无符号整型时
+<code>x /= 3</code> 的汇编代码：</p>
+<figure class="highlight x86asm"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">movl	-<span class="number">12</span>(%rbp), %eax</span><br><span class="line">movl	$-<span class="number">1431655765</span>, %edx</span><br><span class="line">mull	%edx</span><br><span class="line">movl	%edx, %eax</span><br><span class="line">shrl	%eax</span><br><span class="line">movl	%eax, -<span class="number">12</span>(%rbp)</span><br></pre></td></tr></table></figure>
+<p>这里与 x 相乘的常数为 -1431655765。将这个数转为 32 位无符号整型得到
+2863311531。将这个数与前面的 1431655766 对比可以发现：</p>
+<p><span class="math display">\[\begin{aligned}
+    1431655766 &amp; = 2^{32} \times \dfrac{1}{3} + \dfrac{2}{3} \\\\
+    2863311531 \times \dfrac{1}{2} &amp; = 2^{32} \times \dfrac{1}{3} +
+\dfrac{1}{6}
+\end{aligned}\]</span></p>
+<p>所以，取一个无符号数乘 2863311531 后的高 32 位再右移一位，是比直接乘
+1431655766 更接近原数的 <span
+class="math inline">\(\dfrac{1}{3}\)</span>，所以编译器选择了
+2863311531，这样在最后就不需要再修正。</p>
+<h1 id="取模优化">取模优化</h1>
+<p>无符号整型对 2 的整数次幂取模等价于和比模数小 1 的数按位与。例如
+<code>x % 2</code> 的汇编代码如下：</p>
+<figure class="highlight x86asm"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">movl	-<span class="number">12</span>(%rbp), %eax</span><br><span class="line">andl	<span class="number">$1</span>, %eax</span><br><span class="line">movl	%eax, -<span class="number">12</span>(%rbp)</span><br></pre></td></tr></table></figure>
+<p>但当 x 为有符号整数时，需要进行修正：</p>
+<figure class="highlight diff"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"> movl	-12(%rbp), %eax</span><br><span class="line"><span class="addition">+cltd</span></span><br><span class="line"><span class="addition">+shrl	$31, %edx</span></span><br><span class="line"><span class="addition">+addl	%edx, %eax</span></span><br><span class="line"> andl	$1, %eax</span><br><span class="line"><span class="addition">+subl	%edx, %eax</span></span><br><span class="line"> movl	%eax, -12(%rbp)</span><br></pre></td></tr></table></figure>
+<h1 id="if-else-语句和-运算符">if-else 语句和 ?: 运算符</h1>
+<p>对于下面的两段代码：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> (x == <span class="number">1</span>) &#123;</span><br><span class="line">    <span class="built_in">printf</span> (<span class="string">&quot;1&quot;</span>);</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">else</span> &#123;</span><br><span class="line">    <span class="built_in">printf</span> (<span class="string">&quot;2&quot;</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">x == <span class="number">1</span> ? <span class="built_in">printf</span> (<span class="string">&quot;1&quot;</span>) : <span class="built_in">printf</span> (<span class="string">&quot;2&quot;</span>);</span><br></pre></td></tr></table></figure>
+<p>网上有人说，三目运算符比 if
+语句快，所以第二段代码就比第一段代码快。</p>
+<p>实际上汇编代码是一模一样的，所以运行时间也是一样的。</p>
+<p>而 gcc 提供了一个内建函数
+__builtin_expect，将接下来运行的可能性较大的代码放在靠前的位置，减少指令跳转，这样保证了空间局部性，可以减少
+cache miss。但经过测试后发现，__builtin_expect 仅在开启 O2
+优化下有效。</p>
+<p>例如下面的代码：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;cstdio&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;cstdlib&gt;</span></span></span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">main</span> <span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="built_in">srand</span> (<span class="number">2333</span>);</span><br><span class="line">    <span class="type">int</span> cnt1 = <span class="number">0</span>, cnt2 = <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">0</span>; i &lt; <span class="number">1000000000</span>; ++i) &#123;</span><br><span class="line">        <span class="type">int</span> t = <span class="built_in">rand</span> ();</span><br><span class="line">        <span class="keyword">if</span> (t &lt; <span class="number">10</span>) &#123;</span><br><span class="line">            ++cnt1;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">else</span> &#123;</span><br><span class="line">            ++cnt2;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="built_in">printf</span> (<span class="string">&quot;%d %d\n&quot;</span>, cnt1, cnt2);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;cstdio&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;cstdlib&gt;</span></span></span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">main</span> <span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="built_in">srand</span> (<span class="number">2333</span>);</span><br><span class="line">    <span class="type">int</span> cnt1 = <span class="number">0</span>, cnt2 = <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">0</span>; i &lt; <span class="number">1000000000</span>; ++i) &#123;</span><br><span class="line">        <span class="type">int</span> t = <span class="built_in">rand</span> ();</span><br><span class="line">        <span class="keyword">if</span> (__builtin_expect (t &lt; <span class="number">10</span>, <span class="literal">false</span>)) &#123;</span><br><span class="line">            ++cnt1;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">else</span> &#123;</span><br><span class="line">            ++cnt2;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="built_in">printf</span> (<span class="string">&quot;%d %d\n&quot;</span>, cnt1, cnt2);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>使用 <code>__builtin_expect (t &lt; 10, false)</code> 后，编译器把
+else 后的语句放到了紧跟着前面的语句的位置，而当 <code>t &lt; 10</code>
+为 true 时才进行跳转。</p>
+<p>但函数名以下划线开头说明这不是 C++ 标准规定的函数，这也意味着部分 OI
+比赛不支持。</p>
+<h1 id="短路表达式优化">短路表达式优化</h1>
+<p>在由 &amp;&amp; 和 || 逻辑运算符组成的逻辑表达式中，C++
+规定，只对能够确定表达式值所需要的最少数目的表达式进行计算。即当计算一个子表达式的值后，可确定整个表达式的值时，后面的表达式便不必再计算了，这种表达式称为短路表达式。</p>
+<p>即：</p>
+<ul>
+<li>在对表达式 <code>A &amp;&amp; B</code> 求值时，先对表达式 A
+求值。若表达式 A 为 false，则整个表达式的值为 false，不对表达式 B
+求值。</li>
+<li>在对表达式 <code>A || B</code> 求值时，先对表达式 A 求值。若表达式 A
+为 true，则整个表达式的值为 true，不对表达式 B 求值。</li>
+</ul>
+<p>对于下面两段代码：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;cstdio&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;cstdlib&gt;</span></span></span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">main</span> <span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="built_in">srand</span> (<span class="number">2333</span>);</span><br><span class="line">    <span class="type">int</span> cnt;</span><br><span class="line">    <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">0</span>; i &lt; <span class="number">1000000000</span>; ++i) &#123;</span><br><span class="line">        <span class="type">int</span> t = <span class="built_in">rand</span> ();</span><br><span class="line">        <span class="keyword">if</span> ((<span class="type">double</span>)t / RAND_MAX &lt; <span class="number">0.01</span> &amp;&amp; t != <span class="number">0</span>) &#123;</span><br><span class="line">            ++cnt;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="built_in">printf</span> (<span class="string">&quot;%d&quot;</span>, cnt);</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;cstdio&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;cstdlib&gt;</span></span></span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">main</span> <span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="built_in">srand</span> (<span class="number">2333</span>);</span><br><span class="line">    <span class="type">int</span> cnt;</span><br><span class="line">    <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">0</span>; i &lt; <span class="number">1000000000</span>; ++i) &#123;</span><br><span class="line">        <span class="type">int</span> t = <span class="built_in">rand</span> ();</span><br><span class="line">        <span class="keyword">if</span> (t != <span class="number">0</span> &amp;&amp; (<span class="type">double</span>)t / RAND_MAX &lt; <span class="number">0.01</span>) &#123;</span><br><span class="line">            ++cnt;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="built_in">printf</span> (<span class="string">&quot;%d&quot;</span>, cnt);</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>两段代码是等价的，但效率不同。因为
+<code>(double)t / RAND_MAX &lt; 0.01</code> 为 false 的概率比
+<code>t != 0</code> 为 false 的概率大，所以把
+<code>(double)t / RAND_MAX &lt; 0.01</code>
+放在前面会快一些<del>虽然也快不了多少</del>。</p>
+<p>但如果逻辑运算符左右的表达式需要用很长的时间求值，那么合理安排顺序可以节省很多时间。</p>
+<h1 id="自增自减运算符优化">自增自减运算符优化</h1>
+<p>自增、自减运算符 <code>++</code> 和 <code>--</code>
+，前置表示先对操作数进行自增自减操作，再使用操作数；后置表示先使用操作数的值，再对操作数进行自增自减操作。</p>
+<p>即前置是运算后直接使用操作数，而后置是先复制出操作数的值，对操作数进行运算后再使用复制出的值。所以前置比后置快。</p>
+<p>对于下面这两段代码：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;cstdio&gt;</span></span></span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">main</span> <span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="type">int</span> x = <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">1</span>; i &lt;= <span class="number">10</span>; ++i) &#123;</span><br><span class="line">        x += i;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="built_in">printf</span> (<span class="string">&quot;%d\n&quot;</span>, x);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;cstdio&gt;</span></span></span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">main</span> <span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="type">int</span> x = <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">1</span>; i &lt;= <span class="number">10</span>; i++) &#123;</span><br><span class="line">        x += i;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="built_in">printf</span> (<span class="string">&quot;%d\n&quot;</span>, x);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>在 for
+循环中，第一段代码使用了前置自增运算符，第二段代码使用了后置自增运算符，所以第一段比第二段快？</p>
+<p>但因为这里仅仅只是对变量自增，并没有使用 <code>i++</code> 或
+<code>++i</code>
+的值，所以编译器生成的汇编代码是相同的，两段代码的效率完全相同。</p>
+<p>而如果使用了自增或自减之后表达式的值，那么汇编代码就不一样了。不过因为是内置类型，所以即使是这样，也并不会使效率有太大的差距。</p>
+<p>但如果是 STL 中迭代器的自增自减操作，那么差距就大了。因为 STL
+并不内建于编译器，只是标准库中的普通 C++
+代码，所以编译器不能对其进行优化，也就是说：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">for</span> (std::vector&lt;<span class="type">int</span>&gt;::iterator it = v.<span class="built_in">begin</span> (); it != v.<span class="built_in">end</span> (); ++it)</span><br></pre></td></tr></table></figure>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">for</span> (std::vector&lt;<span class="type">int</span>&gt;::iterator it = v.<span class="built_in">begin</span> (); it != v.<span class="built_in">end</span> (); it++)</span><br></pre></td></tr></table></figure>
+<p>这两段代码的效率是不一样的，因为这里的 <code>++it</code> 和
+<code>it++</code>，相当于是调用了
+<code>std::vector&lt;int&gt;::iterator&amp; std::vector&lt;int&gt;::iterator::operator++ ()</code>
+和
+<code>std::vector&lt;int&gt;::iterator std::vector&lt;int&gt;::iterator::operator++ (int)</code>
+两个函数。所以，STL
+迭代器尽量不要使用后置自增自减。不过，对于版本较新的编译器，有可能会针对
+STL
+的特殊性做优化，因为虽然这是两个不同的函数，但不使用值时效果是一样的。</p>
+<h1 id="register-优化">register 优化</h1>
+<blockquote>
+<p>register
+说明符仅在声明于块作用域或函数形参列表中的对象时允许使用。它指示自动存储期，其正是这种声明的缺省情况。另外，此关键词的存在可用于提示优化器将此变量的值存储于
+CPU 寄存器。此关键词于 C++11 被弃用。</p>
+<p style="text-align:right;">
+——cppreference
+</p>
+</blockquote>
+<p><del>人话：</del></p>
+<p>register
+不能用于声明全局变量。它的作用是告诉编译器这个变量会多次使用，可以不在内存中开辟空间而直接使用
+CPU 寄存器。在 C++11 标准中，register
+被停止使用。但为了使以前的代码能够正常工作，所以保留了 register
+声明局部变量的作用，即与 C++11 之前 auto 的作用相同。</p>
+<p>另外，在 C 语言中，使用`register 声明的变量不允许取地址操作；而在 C++
+中，使用 register 声明的变量可以进行取地址操作，此时编译器会忽略
+register。</p>
+<p>最后，虽然 register 从 C++11 起弃用，但不开优化时 gcc 仍然会根据
+register 处理变量，而 clang 则会完全忽略 register。</p>
+<h1 id="inline-优化">inline 优化</h1>
+<blockquote>
+<p>inline
+关键词的本意是作为给优化器的指示器，以指示优先采用函数的内联替换而非进行函数调用，即并不执行将控制转移到函数体内的函数调用
+CPU
+指令，而是代之以执行函数体的一份副本而无需生成调用。这会避免函数调用的开销（传递实参及返回结果），但它可能导致更大的可执行文件，因为函数体必须被复制多次。</p>
+<p>因为关键词 inline 的含义是非强制的，编译器拥有对任何未标记为 inline
+的函数使用内联替换的自由，和对任何标记为 inline
+的函数生成函数调用的自由。这些优化选择不改变上述关于多个定义和共享静态变量的规则。</p>
+<p style="text-align:right;">
+——cppreference
+</p>
+</blockquote>
+<p>可以看出，C++ 标准对编译器的限制是很宽松的。因为 inline
+本身只是用来指示优化的，所以编译器完全可以忽略 inline
+而使用自己的优化策略。</p>
+<p>例如下面两段代码：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;cstdio&gt;</span></span></span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">f</span> <span class="params">(<span class="type">int</span> a)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> a + <span class="number">1</span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">main</span> <span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="type">int</span> a;</span><br><span class="line">    <span class="built_in">scanf</span> (<span class="string">&quot;%d&quot;</span>, &amp;a);</span><br><span class="line">    <span class="built_in">printf</span> (<span class="string">&quot;%d\n&quot;</span>, <span class="built_in">f</span> (a));</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;cstdio&gt;</span></span></span><br><span class="line"><span class="function"><span class="keyword">inline</span> <span class="type">int</span> <span class="title">f</span> <span class="params">(<span class="type">int</span> a)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> a + <span class="number">1</span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">main</span> <span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="type">int</span> a;</span><br><span class="line">    <span class="built_in">scanf</span> (<span class="string">&quot;%d&quot;</span>, &amp;a);</span><br><span class="line">    <span class="built_in">printf</span> (<span class="string">&quot;%d\n&quot;</span>, <span class="built_in">f</span> (a));</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>汇编代码中，都生成了 f 函数，并且都使用 call 指令调用了 f
+函数。可见第二段代码中的 inline 并没有起作用。</p>
+<p>而在开启 O2 优化后，汇编代码中都没有调用 f 函数，而是直接在 main
+函数中执行加一操作。区别在于第一段代码仍然生成了 f
+函数，而第二段代码没有生成 f 函数。</p>
+<p>这就会在处理多个文件时产生问题。例如对于下面这段代码：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="type">int</span> <span class="title">f</span> <span class="params">(<span class="type">int</span>)</span></span>;</span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">g</span> <span class="params">(<span class="type">int</span> a)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="built_in">f</span> (a) + <span class="number">1</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>将这段代码单独存为一个文件。在开启 O2
+优化的情况下，将这段代码和前面的第一段代码一起编译，不会产生任何问题；但如果将这段代码和前面的第二段代码一起编译，编译器就会报错。因为第二段代码中的
+f 函数并没有生成，所以在这段代码中就会找不到 f
+函数的定义而编译失败<del>当然在 OI 里就不用管了</del>。</p>
+<h1 id="内联汇编">内联汇编</h1>
+<p>在汇编语言中，用助记符代替机器指令的操作码，用地址符号或标号代替指令或操作数的地址。所以，汇编语言本质就是机器指令。</p>
+<h2 id="快速乘">快速乘</h2>
+<p>例题：<a target="_blank" rel="noopener" href="https://www.acwing.com/problem/content/92/">64
+位整数乘法</a> <del>怎么内联汇编都能有例题</del></p>
+<p>求 <span class="math inline">\(a\times b \bmod p\)</span>，其中 <span
+class="math inline">\(1 \leqslant a,b,p \leqslant 10^{18}\)</span></p>
+<p>虽然这道题的结果在 long long 范围内，但乘法的过程中爆了 long
+long，所以并不能直接计算，而要使用龟速乘。</p>
+<p>但实际上，两个 64 位整数相乘，CPU 是算到了 128 位的，然后编译器把高
+64
+位给扔掉了。<img data-src="/images/emoji/5.gif" class="nofancybox" style="margin: 0 0 0 0" /></p>
+<p>那么可以考虑使用汇编语言完成计算。</p>
+<p>先上代码：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;cstdio&gt;</span></span></span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">main</span> <span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="type">unsigned</span> <span class="type">long</span> <span class="type">long</span> a, b, p, ans;</span><br><span class="line">    <span class="built_in">scanf</span> (<span class="string">&quot;%llu%llu%llu&quot;</span>, &amp;a, &amp;b, &amp;p);</span><br><span class="line">    __asm__ (<span class="string">&quot;mulq %2;divq %3&quot;</span> : <span class="string">&quot;=d&quot;</span> (ans) : <span class="string">&quot;a&quot;</span> (a), <span class="string">&quot;m&quot;</span> (b), <span class="string">&quot;m&quot;</span> (p));</span><br><span class="line">    <span class="built_in">printf</span> (<span class="string">&quot;%llu\n&quot;</span>, ans);</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>其中 <code>__asm__</code>
+表示内联汇编，后面括号里用冒号分隔汇编代码、输出操作数和输入操作数。其中第一个冒号前面的字符串就是汇编代码，其中的
+<code>%2</code>、<code>%3</code> 是占位符，用于和 C++ 表达式对应。</p>
+<p>汇编代码后面的 <code>"=d" (ans)</code>、<code>"a" (a)</code> 和
+<code>"m" (b)</code> 表示相应的 C++ 表达式，按照出现顺序分别对应
+<code>%0</code>、<code>%1</code>、<code>%2</code>
+等。前面的字符串是对操作数的限制。<code>=</code>
+表示输出操作数，<code>d</code> 表示与寄存器 rdx 关联，<code>a</code>
+表示与寄存器 rax 关联，<code>m</code> 表示直接使用内存地址。</p>
+<p>汇编代码中的 mulq 表示 64 位整数乘法，两个乘数分别是寄存器 rax
+和后面的参数，这也是为什么要将变量 a 与寄存器 rax
+相关联的原因。而乘法结果放在 rdx:rax 中，即高 64 位放在 rdx 中，低 64
+位放在 rax 中。</p>
+<p>divq 表示 128 位整数除以 64 位整数，被除数是
+rdx:rax，除数是后面的参数。而商和余数分别放在 rax 和 rdx
+中，这也是为什么要将 ans 与 rdx 关联的原因。</p>
+<p>~~但是如果连 __int128 都不允许使用的话内联汇编就还是算了吧~~</p>
+<h2 id="扩栈">扩栈</h2>
+<p>在一些评测环境下如果递归过深，会因为栈空间不足导致运行时错误。那么就可以使用汇编扩栈。</p>
+<p>（32位系统的扩栈方法只需把下面代码中的 movq 改为 movl，rsp 改为 esp
+即可）</p>
+<p>64位系统扩栈方法：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">const</span> <span class="type">int</span> SIZE = <span class="number">64</span> &lt;&lt; <span class="number">20</span>; <span class="comment">// 即 64MB</span></span><br><span class="line"><span class="type">char</span> buf[SIZE], *p;</span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">main</span> <span class="params">()</span> </span>&#123;</span><br><span class="line">    __asm__ (<span class="string">&quot;movq %%rsp, %0;movq %1, %%rsp&quot;</span> : <span class="string">&quot;=m&quot;</span> (p) : <span class="string">&quot;p&quot;</span> (buf + SIZE)); <span class="comment">// 注意这样做并不能保证一定不会出错，因为栈空间的分配方式并不是确定的。不过因为大部分操作系统及编译器都使用从高到低的方式，所以通常情况下可以这样写。</span></span><br><span class="line">    <span class="comment">// do something</span></span><br><span class="line">    __asm__ (<span class="string">&quot;movq %0, %%rsp&quot;</span> :: <span class="string">&quot;p&quot;</span> (p));</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>汇编代码中的 <code>%%rsp</code> 表示 rsp 寄存器，储存堆栈指针。后面
+<code>"p" (buf + SIZE)</code> 中的限制字符串 <code>"p"</code>
+表示把后面的 C++
+表达式按指针来处理。因为数组名可以看作是首元素的指针，所以
+<code>buf + SIZE</code> 就是 buf 数组末尾元素的下一个元素的指针。</p>
+<p>这段代码首先把系统堆栈指针的值存下来，然后把内存中一段 64MB
+的空间用作堆栈，而在 main 函数的末尾再把原来系统堆栈指针存回 rsp
+寄存器中。</p>
+<p>不过更短一点的写法是这样：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="type">int</span> <span class="title">main</span> <span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="type">int</span> SIZE = <span class="number">64</span> &lt;&lt; <span class="number">20</span>;</span><br><span class="line">    __asm__ (<span class="string">&quot;movq %0, %%rsp&quot;</span> :: <span class="string">&quot;p&quot;</span> ((<span class="type">char</span>*)<span class="built_in">malloc</span> (SIZE) + SIZE)); <span class="comment">// (char*)malloc (SIZE) 也可以换成 new char[SIZE]</span></span><br><span class="line">    <span class="comment">// do something</span></span><br><span class="line">    <span class="built_in">exit</span> (<span class="number">0</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>为什么 main 最后要写 <code>exit (0)</code>？改成
+<code>return 0</code> 行不行？</p>
+<p><del>恭喜你，RE 快乐。</del></p>
+<p>return 是函数的退出，exit 是进程的退出。因为 main
+函数是程序的入口，所以 main 函数中的 return 和 exit 等价。</p>
+<p>但是，main 函数真的是程序的入口吗？</p>
+<p>实际上，一个 C++ 程序启动时，会先进行一些初始化操作，然后调用 main
+函数，在 main 函数结束后再执行清理操作。所以 main
+函数本身就存于系统栈中。因为没有在 return 前把原来系统堆栈指针存回 rsp
+寄存器中，所以此时 main 函数返回就会产生错误。而 <code>exit (0)</code>
+就跳过了 main
+函数储存返回值并返回的过程，直接进行清理操作并结束进程。</p>
+<p>另外，静态存储区的变量会在进程最后的清理操作时进行析构并释放，而在堆中分配的空间如果没有手动释放，会在进程结束后由操作系统释放。同时，线程结束后寄存器的清理操作也由操作系统来完成。因为没有把原来系统堆栈指针存回
+rsp
+寄存器中，所以如果使用静态存储区的空间就会导致在寄存器清理前空间就被释放，因此这里只能用堆中分配空间。</p>
+<p><del>话说我好像跑题了</del></p>
+<p><del>不过这么搞总比魔改算法快亿点（</del></p>
+<h1 id="总结">总结</h1>
+<ol type="1">
+<li>使用无符号类型比有符号类型更快；</li>
+<li>使用前置自增自减运算符比后置自增自减运算符更快；</li>
+<li>使用 gcc 编译且不开优化时， register
+还会起作用，即使已经被弃用；</li>
+<li>inline 几乎没用；</li>
+<li>能不用汇编就别用了<del>毕竟这东西容易带来 Bug</del>。</li>
+</ol>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="reward-container">
+  <div></div>
+  <button>
+    赞赏
+  </button>
+  <div class="post-reward">
+      <div>
+        <img src="/images/wechatpay.png" alt="zhjxaoini 微信">
+        <span>微信</span>
+      </div>
+
+  </div>
+</div>
+
+          
+
+<div class="post-copyright">
+<ul>
+  <li class="post-copyright-author">
+      <strong>本文作者： </strong>zhjxaoini
+  </li>
+  <li class="post-copyright-link">
+      <strong>本文链接：</strong>
+      <a href="http://blog.zhaojinxi.top/2020/02/03/qian-tan-di-ceng-chang-shu-you-hua-ji-bian-yi-qi-you-hua/" title="浅谈底层常数优化及编译器优化">http://blog.zhaojinxi.top/2020/02/03/qian-tan-di-ceng-chang-shu-you-hua-ji-bian-yi-qi-you-hua/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-nd/4.0/deed.zh" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-ND</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+          <div class="post-tags">
+              <a href="/tags/OI/" rel="tag"><i class="fa fa-tag"></i> OI</a>
+              <a href="/tags/%E4%BC%98%E5%8C%96/" rel="tag"><i class="fa fa-tag"></i> 优化</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+            </div>
+            <div class="post-nav-item">
+                <a href="/2020/07/30/SYZOJ-bu-shu-mo-gai-ji-lu/" rel="next" title="SYZOJ 部署&魔改记录">
+                  SYZOJ 部署&魔改记录 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 2019 – 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">zhjxaoini</span>
+</div>
+
+    </div>
+  </footer>
+
+  
+  <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js" integrity="sha256-yt2kYMy0w8AbtF89WXb2P1rfjcP/HTHLT7097U8Y5b8=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/lozad@1.16.0/dist/lozad.min.js" integrity="sha256-mOFREFhqmHeQbXpK2lp4nA3qooVgACfh88fpJftLBbc=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+  <script src="/js/third-party/fancybox.js"></script>
+
+
+  
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">true</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"none","js":{"url":"https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-mml-chtml.js","integrity":"sha256-MASABpB4tYktI2Oitl4t+78w/lyA+D7b/s9GEP0JOGI="}}</script>
+<script src="/js/third-party/math/mathjax.js"></script>
+
+
+
+</body>
+</html>
