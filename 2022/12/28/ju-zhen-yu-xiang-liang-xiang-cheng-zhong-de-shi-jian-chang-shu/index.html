@@ -22,60 +22,29 @@
 
 <script class="next-config" data-name="main" type="application/json">{"hostname":"blog.zhaojinxi.top","root":"/","images":"/images","scheme":"Gemini","darkmode":true,"version":"8.12.2","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":{"enable":true,"style":"flat"},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":true,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}}</script><script src="/js/config.js"></script>
 
-    <meta name="description" content="滚 键 盘 人    萌 混 过 关 人">
+    <meta name="description" content="以下代码中，mul1 是行向量乘矩阵，mul2 是矩阵乘列向量。 可以看出，两段代码的内存访问都是连续的，那为什么 mul2 会比 mul1 慢 3 倍？ 123456789101112using Vector &#x3D; int[MAXN];using Matrix &#x3D; int[MAXN][MAXN];void mul1(int n, const Vector&amp; a, const Ma">
 <meta property="og:type" content="article">
-<meta property="og:title" content="CSP-S2020 山 西 迷 惑 行 为 大 赏">
-<meta property="og:url" content="http://blog.zhaojinxi.top/2020/11/14/CSP-S2020-shan-xi-mi-huo-xing-wei-dai-shang/">
+<meta property="og:title" content="矩阵与向量相乘中的时间常数">
+<meta property="og:url" content="http://blog.zhaojinxi.top/2022/12/28/ju-zhen-yu-xiang-liang-xiang-cheng-zhong-de-shi-jian-chang-shu/">
 <meta property="og:site_name" content="zhjxaoini&#39;s Blog">
-<meta property="og:description" content="滚 键 盘 人    萌 混 过 关 人">
+<meta property="og:description" content="以下代码中，mul1 是行向量乘矩阵，mul2 是矩阵乘列向量。 可以看出，两段代码的内存访问都是连续的，那为什么 mul2 会比 mul1 慢 3 倍？ 123456789101112using Vector &#x3D; int[MAXN];using Matrix &#x3D; int[MAXN][MAXN];void mul1(int n, const Vector&amp; a, const Ma">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="http://blog.zhaojinxi.top/2020/11/14/CSP-S2020-shan-xi-mi-huo-xing-wei-dai-shang/1.png">
-<meta property="og:image" content="http://blog.zhaojinxi.top/2020/11/14/CSP-S2020-shan-xi-mi-huo-xing-wei-dai-shang/2.png">
-<meta property="og:image" content="http://blog.zhaojinxi.top/2020/11/14/CSP-S2020-shan-xi-mi-huo-xing-wei-dai-shang/3.png">
-<meta property="og:image" content="http://blog.zhaojinxi.top/2020/11/14/CSP-S2020-shan-xi-mi-huo-xing-wei-dai-shang/4.png">
-<meta property="og:image" content="http://blog.zhaojinxi.top/2020/11/14/CSP-S2020-shan-xi-mi-huo-xing-wei-dai-shang/5.png">
-<meta property="og:image" content="http://blog.zhaojinxi.top/2020/11/14/CSP-S2020-shan-xi-mi-huo-xing-wei-dai-shang/6.png">
-<meta property="og:image" content="http://blog.zhaojinxi.top/2020/11/14/CSP-S2020-shan-xi-mi-huo-xing-wei-dai-shang/7.png">
-<meta property="og:image" content="http://blog.zhaojinxi.top/2020/11/14/CSP-S2020-shan-xi-mi-huo-xing-wei-dai-shang/8.png">
-<meta property="og:image" content="http://blog.zhaojinxi.top/2020/11/14/CSP-S2020-shan-xi-mi-huo-xing-wei-dai-shang/9.png">
-<meta property="og:image" content="http://blog.zhaojinxi.top/2020/11/14/CSP-S2020-shan-xi-mi-huo-xing-wei-dai-shang/10.png">
-<meta property="og:image" content="http://blog.zhaojinxi.top/2020/11/14/CSP-S2020-shan-xi-mi-huo-xing-wei-dai-shang/11.png">
-<meta property="og:image" content="http://blog.zhaojinxi.top/2020/11/14/CSP-S2020-shan-xi-mi-huo-xing-wei-dai-shang/12.png">
-<meta property="og:image" content="http://blog.zhaojinxi.top/2020/11/14/CSP-S2020-shan-xi-mi-huo-xing-wei-dai-shang/13.png">
-<meta property="og:image" content="http://blog.zhaojinxi.top/2020/11/14/CSP-S2020-shan-xi-mi-huo-xing-wei-dai-shang/14.png">
-<meta property="og:image" content="http://blog.zhaojinxi.top/2020/11/14/CSP-S2020-shan-xi-mi-huo-xing-wei-dai-shang/15.png">
-<meta property="og:image" content="http://blog.zhaojinxi.top/2020/11/14/CSP-S2020-shan-xi-mi-huo-xing-wei-dai-shang/16.png">
-<meta property="og:image" content="http://blog.zhaojinxi.top/2020/11/14/CSP-S2020-shan-xi-mi-huo-xing-wei-dai-shang/17.png">
-<meta property="og:image" content="http://blog.zhaojinxi.top/2020/11/14/CSP-S2020-shan-xi-mi-huo-xing-wei-dai-shang/18.png">
-<meta property="og:image" content="http://blog.zhaojinxi.top/2020/11/14/CSP-S2020-shan-xi-mi-huo-xing-wei-dai-shang/19.png">
-<meta property="og:image" content="http://blog.zhaojinxi.top/2020/11/14/CSP-S2020-shan-xi-mi-huo-xing-wei-dai-shang/20.png">
-<meta property="og:image" content="http://blog.zhaojinxi.top/2020/11/14/CSP-S2020-shan-xi-mi-huo-xing-wei-dai-shang/21.png">
-<meta property="og:image" content="http://blog.zhaojinxi.top/2020/11/14/CSP-S2020-shan-xi-mi-huo-xing-wei-dai-shang/22.png">
-<meta property="og:image" content="http://blog.zhaojinxi.top/2020/11/14/CSP-S2020-shan-xi-mi-huo-xing-wei-dai-shang/23.png">
-<meta property="og:image" content="http://blog.zhaojinxi.top/2020/11/14/CSP-S2020-shan-xi-mi-huo-xing-wei-dai-shang/24.png">
-<meta property="og:image" content="http://blog.zhaojinxi.top/2020/11/14/CSP-S2020-shan-xi-mi-huo-xing-wei-dai-shang/25.png">
-<meta property="og:image" content="http://blog.zhaojinxi.top/2020/11/14/CSP-S2020-shan-xi-mi-huo-xing-wei-dai-shang/26.png">
-<meta property="og:image" content="http://blog.zhaojinxi.top/2020/11/14/CSP-S2020-shan-xi-mi-huo-xing-wei-dai-shang/27.png">
-<meta property="og:image" content="http://blog.zhaojinxi.top/2020/11/14/CSP-S2020-shan-xi-mi-huo-xing-wei-dai-shang/28.png">
-<meta property="og:image" content="http://blog.zhaojinxi.top/2020/11/14/CSP-S2020-shan-xi-mi-huo-xing-wei-dai-shang/29.png">
-<meta property="og:image" content="http://blog.zhaojinxi.top/2020/11/14/CSP-S2020-shan-xi-mi-huo-xing-wei-dai-shang/30.png">
-<meta property="og:image" content="http://blog.zhaojinxi.top/2020/11/14/CSP-S2020-shan-xi-mi-huo-xing-wei-dai-shang/31.png">
-<meta property="article:published_time" content="2020-11-14T06:15:14.000Z">
-<meta property="article:modified_time" content="2022-07-07T05:25:23.698Z">
+<meta property="article:published_time" content="2022-12-28T12:04:36.000Z">
+<meta property="article:modified_time" content="2022-12-28T13:02:36.477Z">
 <meta property="article:author" content="zhjxaoini">
 <meta property="article:tag" content="OI">
+<meta property="article:tag" content="常数优化">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="http://blog.zhaojinxi.top/2020/11/14/CSP-S2020-shan-xi-mi-huo-xing-wei-dai-shang/1.png">
 
 
-<link rel="canonical" href="http://blog.zhaojinxi.top/2020/11/14/CSP-S2020-shan-xi-mi-huo-xing-wei-dai-shang/">
+<link rel="canonical" href="http://blog.zhaojinxi.top/2022/12/28/ju-zhen-yu-xiang-liang-xiang-cheng-zhong-de-shi-jian-chang-shu/">
 
 
 
-<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"http://blog.zhaojinxi.top/2020/11/14/CSP-S2020-shan-xi-mi-huo-xing-wei-dai-shang/","path":"2020/11/14/CSP-S2020-shan-xi-mi-huo-xing-wei-dai-shang/","title":"CSP-S2020 山 西 迷 惑 行 为 大 赏"}</script>
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"http://blog.zhaojinxi.top/2022/12/28/ju-zhen-yu-xiang-liang-xiang-cheng-zhong-de-shi-jian-chang-shu/","path":"2022/12/28/ju-zhen-yu-xiang-liang-xiang-cheng-zhong-de-shi-jian-chang-shu/","title":"矩阵与向量相乘中的时间常数"}</script>
 
 <script class="next-config" data-name="calendar" type="application/json">""</script>
-<title>CSP-S2020 山 西 迷 惑 行 为 大 赏 | zhjxaoini's Blog</title>
+<title>矩阵与向量相乘中的时间常数 | zhjxaoini's Blog</title>
   
 
 
@@ -226,7 +195,7 @@
   
 
   <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://blog.zhaojinxi.top/2020/11/14/CSP-S2020-shan-xi-mi-huo-xing-wei-dai-shang/">
+    <link itemprop="mainEntityOfPage" href="http://blog.zhaojinxi.top/2022/12/28/ju-zhen-yu-xiang-liang-xiang-cheng-zhong-de-shi-jian-chang-shu/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.png">
@@ -239,12 +208,12 @@
     </span>
 
     <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
-      <meta itemprop="name" content="CSP-S2020 山 西 迷 惑 行 为 大 赏 | zhjxaoini's Blog">
+      <meta itemprop="name" content="矩阵与向量相乘中的时间常数 | zhjxaoini's Blog">
       <meta itemprop="description" content="">
     </span>
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
-          CSP-S2020 山 西 迷 惑 行 为 大 赏
+          矩阵与向量相乘中的时间常数
         </h1>
 
         <div class="post-meta-container">
@@ -255,7 +224,7 @@
       </span>
       <span class="post-meta-item-text">发表于</span>
 
-      <time title="创建时间：2020-11-14 14:15:14" itemprop="dateCreated datePublished" datetime="2020-11-14T14:15:14+08:00">2020-11-14</time>
+      <time title="创建时间：2022-12-28 20:04:36" itemprop="dateCreated datePublished" datetime="2022-12-28T20:04:36+08:00">2022-12-28</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -263,7 +232,7 @@
       </span>
       <span class="post-meta-item-text">分类于</span>
         <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/%E7%81%8C%E6%B0%B4/" itemprop="url" rel="index"><span itemprop="name">灌水</span></a>
+          <a href="/categories/%E7%AC%94%E8%AE%B0/" itemprop="url" rel="index"><span itemprop="name">笔记</span></a>
         </span>
     </span>
 
@@ -277,122 +246,35 @@
     
     
     <div class="post-body" itemprop="articleBody">
-        <img data-src="/2020/11/14/CSP-S2020-shan-xi-mi-huo-xing-wei-dai-shang/1.png" class="">
-<p style="text-align:center">
-滚 键 盘 人
-</p>
-<img data-src="/2020/11/14/CSP-S2020-shan-xi-mi-huo-xing-wei-dai-shang/2.png" class="">
-<p style="text-align:center">
-萌 混 过 关 人
-</p>
+        <p>以下代码中，<code>mul1</code>
+是<strong>行向量乘矩阵</strong>，<code>mul2</code>
+是<strong>矩阵乘列向量</strong>。</p>
+<p>可以看出，两段代码的内存访问都是连续的，那为什么 <code>mul2</code>
+会比 <code>mul1</code> 慢 3 倍？</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">using</span> Vector = <span class="type">int</span>[MAXN];</span><br><span class="line"><span class="keyword">using</span> Matrix = <span class="type">int</span>[MAXN][MAXN];</span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">mul1</span><span class="params">(<span class="type">int</span> n, <span class="type">const</span> Vector&amp; a, <span class="type">const</span> Matrix&amp; b, Vector&amp; ans)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">1</span>; i &lt;= n; i++)</span><br><span class="line">        <span class="keyword">for</span> (<span class="type">int</span> j = <span class="number">1</span>; j &lt;= n; j++)</span><br><span class="line">            ans[j] = (ans[j] + (<span class="type">long</span> <span class="type">long</span>)a[i] * b[i][j]) % MOD;</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">mul2</span><span class="params">(<span class="type">int</span> n, <span class="type">const</span> Matrix&amp; a, <span class="type">const</span> Vector&amp; b, Vector&amp; ans)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">1</span>; i &lt;= n; i++)</span><br><span class="line">        <span class="keyword">for</span> (<span class="type">int</span> j = <span class="number">1</span>; j &lt;= n; j++)</span><br><span class="line">            ans[i] = (ans[i] + (<span class="type">long</span> <span class="type">long</span>)a[i][j] * b[j]) % MOD;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <span id="more"></span>
-<img data-src="/2020/11/14/CSP-S2020-shan-xi-mi-huo-xing-wei-dai-shang/3.png" class="">
-<p style="text-align:center">
-R P + + 人
-</p>
-<img data-src="/2020/11/14/CSP-S2020-shan-xi-mi-huo-xing-wei-dai-shang/4.png" class="">
-<p style="text-align:center">
-吉 利 安 人
-</p>
-<img data-src="/2020/11/14/CSP-S2020-shan-xi-mi-huo-xing-wei-dai-shang/5.png" class="">
-<p style="text-align:center">
-不 写 括 号 人
-</p>
-<img data-src="/2020/11/14/CSP-S2020-shan-xi-mi-huo-xing-wei-dai-shang/6.png" class="">
-<p style="text-align:center">
-逆 流 人
-</p>
-<img data-src="/2020/11/14/CSP-S2020-shan-xi-mi-huo-xing-wei-dai-shang/7.png" class="">
-<p style="text-align:center">
-f r e o p e n 个 寂 寞 人
-</p>
-<img data-src="/2020/11/14/CSP-S2020-shan-xi-mi-huo-xing-wei-dai-shang/8.png" class="">
-<p style="text-align:center">
-输 出 样 例 人
-</p>
-<img data-src="/2020/11/14/CSP-S2020-shan-xi-mi-huo-xing-wei-dai-shang/9.png" class="">
-<p style="text-align:center">
-w r 写 反 人 兼 “ 人
-</p>
-<img data-src="/2020/11/14/CSP-S2020-shan-xi-mi-huo-xing-wei-dai-shang/10.png" class="">
-<p style="text-align:center">
-i t n 人
-</p>
-<img data-src="/2020/11/14/CSP-S2020-shan-xi-mi-huo-xing-wei-dai-shang/11.png" class="">
-<p style="text-align:center">
-移 动 客 服 人
-</p>
-<img data-src="/2020/11/14/CSP-S2020-shan-xi-mi-huo-xing-wei-dai-shang/12.png" class="">
-<p style="text-align:center">
-1 0 倍 移 动 客 服 人
-</p>
-<img data-src="/2020/11/14/CSP-S2020-shan-xi-mi-huo-xing-wei-dai-shang/13.png" class="">
-<p style="text-align:center">
-注 释 人
-</p>
-<img data-src="/2020/11/14/CSP-S2020-shan-xi-mi-huo-xing-wei-dai-shang/14.png" class="">
-<p style="text-align:center">
-只 读 不 用 人
-</p>
-<img data-src="/2020/11/14/CSP-S2020-shan-xi-mi-huo-xing-wei-dai-shang/15.png" class="">
-<p style="text-align:center">
-按 错 键 盘 人
-</p>
-<img data-src="/2020/11/14/CSP-S2020-shan-xi-mi-huo-xing-wei-dai-shang/16.png" class="">
-<p style="text-align:center">
-双 倍 读 入 人 兼 没 分 人
-</p>
-<img data-src="/2020/11/14/CSP-S2020-shan-xi-mi-huo-xing-wei-dai-shang/17.png" class="">
-<p style="text-align:center">
-英 语 人
-</p>
-<img data-src="/2020/11/14/CSP-S2020-shan-xi-mi-huo-xing-wei-dai-shang/18.png" class="">
-<p style="text-align:center">
-考 场 题 解 人
-</p>
-<img data-src="/2020/11/14/CSP-S2020-shan-xi-mi-huo-xing-wei-dai-shang/19.png" class="">
-<p style="text-align:center">
-凹 特 人
-</p>
-<img data-src="/2020/11/14/CSP-S2020-shan-xi-mi-huo-xing-wei-dai-shang/20.png" class="">
-<p style="text-align:center">
-审 题 不 清 人
-</p>
-<img data-src="/2020/11/14/CSP-S2020-shan-xi-mi-huo-xing-wei-dai-shang/21.png" class="">
-<img data-src="/2020/11/14/CSP-S2020-shan-xi-mi-huo-xing-wei-dai-shang/22.png" class="">
-<img data-src="/2020/11/14/CSP-S2020-shan-xi-mi-huo-xing-wei-dai-shang/23.png" class="">
-<img data-src="/2020/11/14/CSP-S2020-shan-xi-mi-huo-xing-wei-dai-shang/24.png" class="">
-<p style="text-align:center">
-赛 时 吐 槽 人
-</p>
-<img data-src="/2020/11/14/CSP-S2020-shan-xi-mi-huo-xing-wei-dai-shang/25.png" class="">
-<p style="text-align:center">
-参 数 写 反 人
-</p>
-<img data-src="/2020/11/14/CSP-S2020-shan-xi-mi-huo-xing-wei-dai-shang/26.png" class="">
-<p style="text-align:center">
-单 复 不 分 人
-</p>
-<img data-src="/2020/11/14/CSP-S2020-shan-xi-mi-huo-xing-wei-dai-shang/27.png" class="">
-<p style="text-align:center">
-码 农 人
-</p>
-<img data-src="/2020/11/14/CSP-S2020-shan-xi-mi-huo-xing-wei-dai-shang/28.png" class="">
-<p style="text-align:center">
-再 来 一 次 人
-</p>
-<img data-src="/2020/11/14/CSP-S2020-shan-xi-mi-huo-xing-wei-dai-shang/29.png" class="">
-<p style="text-align:center">
-f r e o p e n 读 变 量 人 兼 s t d i o u t 人
-</p>
-<img data-src="/2020/11/14/CSP-S2020-shan-xi-mi-huo-xing-wei-dai-shang/30.png" class="">
-<p style="text-align:center">
-整 体 操 作 人
-</p>
-<img data-src="/2020/11/14/CSP-S2020-shan-xi-mi-huo-xing-wei-dai-shang/31.png" class="">
-<p style="text-align:center">
-没 按 s h i f t 人
-</p>
+<p>原因在于， <code>mul1</code> 中每次循环修改的是
+<code>ans[j]</code>，其中 <code>j</code>
+是<strong>内层</strong>循环变量，所以每次执行时 <code>ans[j]</code>
+都是不同的变量，运算时<strong>不存在数据依赖</strong>，现代超标量 CPU
+可以充分进行<strong>并发运算</strong>。</p>
+<p>而 <code>mul2</code> 中每次循环修改的是 <code>ans[i]</code>，其中
+<code>i</code> 是<strong>外层</strong>循环变量，导致连续 n 次循环中
+<code>ans[i]</code>
+都是同一个变量，每次运算都<strong>依赖上一次运算结果</strong>，无法同时执行。</p>
+<hr />
+<p>事实上，虽然在现代编译器的优化下，对常数取模可以不使用
+<code>div</code> 指令，但<strong>取模的开销仍然不小</strong>。</p>
+<p>如果将以上代码中的 <code>% MOD</code>
+去掉，两个函数的效率就一样了，可见让 <code>mul2</code> 变慢的主要原因是
+<code>ans[i]</code>
+参与了取模，导致<strong>每次取模运算必须顺序执行</strong>。</p>
+<p>那么我们可以只对 <code>(long long)a[i][j] * b[j]</code>
+取模，保证<strong>复杂运算之间不存在数据依赖</strong>，也可以让 CPU
+充分并发。</p>
+<p>也就是将 <code>mul2</code> 改成这样：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="type">void</span> <span class="title">mul2</span><span class="params">(<span class="type">int</span> n, <span class="type">const</span> Matrix&amp; a, <span class="type">const</span> Vector&amp; b, Vector&amp; ans)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">1</span>; i &lt;= n; i++) &#123;</span><br><span class="line">        <span class="type">long</span> <span class="type">long</span> sum = ans[i];</span><br><span class="line">        <span class="keyword">for</span> (<span class="type">int</span> j = <span class="number">1</span>; j &lt;= n; j++)</span><br><span class="line">            sum += (<span class="type">long</span> <span class="type">long</span>)a[i][j] * b[j] % MOD;</span><br><span class="line">        ans[i] = sum % MOD;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>效率就和 <code>mul1</code> 一样了。</p>
 
     </div>
 
@@ -424,7 +306,7 @@ f r e o p e n 读 变 量 人 兼 s t d i o u t 人
   </li>
   <li class="post-copyright-link">
       <strong>本文链接：</strong>
-      <a href="http://blog.zhaojinxi.top/2020/11/14/CSP-S2020-shan-xi-mi-huo-xing-wei-dai-shang/" title="CSP-S2020 山 西 迷 惑 行 为 大 赏">http://blog.zhaojinxi.top/2020/11/14/CSP-S2020-shan-xi-mi-huo-xing-wei-dai-shang/</a>
+      <a href="http://blog.zhaojinxi.top/2022/12/28/ju-zhen-yu-xiang-liang-xiang-cheng-zhong-de-shi-jian-chang-shu/" title="矩阵与向量相乘中的时间常数">http://blog.zhaojinxi.top/2022/12/28/ju-zhen-yu-xiang-liang-xiang-cheng-zhong-de-shi-jian-chang-shu/</a>
   </li>
   <li class="post-copyright-license">
     <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-nd/4.0/deed.zh" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-ND</a> 许可协议。转载请注明出处！
@@ -434,20 +316,18 @@ f r e o p e n 读 变 量 人 兼 s t d i o u t 人
 
           <div class="post-tags">
               <a href="/tags/OI/" rel="tag"><i class="fa fa-tag"></i> OI</a>
+              <a href="/tags/%E5%B8%B8%E6%95%B0%E4%BC%98%E5%8C%96/" rel="tag"><i class="fa fa-tag"></i> 常数优化</a>
           </div>
 
         
 
           <div class="post-nav">
             <div class="post-nav-item">
-                <a href="/2020/07/30/SYZOJ-bu-shu-mo-gai-ji-lu/" rel="prev" title="SYZOJ 部署&魔改记录">
-                  <i class="fa fa-chevron-left"></i> SYZOJ 部署&魔改记录
+                <a href="/2020/12/06/NOIP2020-shan-xi-mi-huo-xing-wei-dai-shang/" rel="prev" title="NOIP2020 山 西 迷 惑 行 为 大 赏">
+                  <i class="fa fa-chevron-left"></i> NOIP2020 山 西 迷 惑 行 为 大 赏
                 </a>
             </div>
             <div class="post-nav-item">
-                <a href="/2020/12/06/NOIP2020-shan-xi-mi-huo-xing-wei-dai-shang/" rel="next" title="NOIP2020 山 西 迷 惑 行 为 大 赏">
-                  NOIP2020 山 西 迷 惑 行 为 大 赏 <i class="fa fa-chevron-right"></i>
-                </a>
             </div>
           </div>
     </footer>
