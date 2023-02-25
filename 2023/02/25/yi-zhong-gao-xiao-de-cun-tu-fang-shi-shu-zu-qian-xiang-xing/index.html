@@ -22,52 +22,29 @@
 
 <script class="next-config" data-name="main" type="application/json">{"hostname":"blog.zhaojinxi.top","root":"/","images":"/images","scheme":"Gemini","darkmode":true,"version":"8.12.2","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":{"enable":true,"style":"flat"},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":true,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}}</script><script src="/js/config.js"></script>
 
-    <meta name="description" content="本来以为 CSP 刷下去一波后，NOIP 的迷惑行为会少很多，结果……     放 弃 人">
+    <meta name="description" content="此数据结构的正确名字为前向星，为了与链式前向星区别，本文中将其称为数组前向星。 数组前向星是一个特殊的边集数组。将边按照起点排序，那么每个点的所有出边都存储在一个区间中，记下区间的范围即可。排序方式使用计数排序，时间复杂度为线性。 其同时具备 vector 和链式前向星的优点，既能保证遍历时内存访问连续，又不需要动态分配内存。">
 <meta property="og:type" content="article">
-<meta property="og:title" content="NOIP2020 山 西 迷 惑 行 为 大 赏">
-<meta property="og:url" content="http://blog.zhaojinxi.top/2020/12/06/NOIP2020-shan-xi-mi-huo-xing-wei-dai-shang/">
+<meta property="og:title" content="一种高效的存图方式——数组前向星">
+<meta property="og:url" content="http://blog.zhaojinxi.top/2023/02/25/yi-zhong-gao-xiao-de-cun-tu-fang-shi-shu-zu-qian-xiang-xing/">
 <meta property="og:site_name" content="zhjxaoini&#39;s Blog">
-<meta property="og:description" content="本来以为 CSP 刷下去一波后，NOIP 的迷惑行为会少很多，结果……     放 弃 人">
+<meta property="og:description" content="此数据结构的正确名字为前向星，为了与链式前向星区别，本文中将其称为数组前向星。 数组前向星是一个特殊的边集数组。将边按照起点排序，那么每个点的所有出边都存储在一个区间中，记下区间的范围即可。排序方式使用计数排序，时间复杂度为线性。 其同时具备 vector 和链式前向星的优点，既能保证遍历时内存访问连续，又不需要动态分配内存。">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="http://blog.zhaojinxi.top/2020/12/06/NOIP2020-shan-xi-mi-huo-xing-wei-dai-shang/1.png">
-<meta property="og:image" content="http://blog.zhaojinxi.top/2020/12/06/NOIP2020-shan-xi-mi-huo-xing-wei-dai-shang/2.png">
-<meta property="og:image" content="http://blog.zhaojinxi.top/2020/12/06/NOIP2020-shan-xi-mi-huo-xing-wei-dai-shang/3.png">
-<meta property="og:image" content="http://blog.zhaojinxi.top/2020/12/06/NOIP2020-shan-xi-mi-huo-xing-wei-dai-shang/4.png">
-<meta property="og:image" content="http://blog.zhaojinxi.top/2020/12/06/NOIP2020-shan-xi-mi-huo-xing-wei-dai-shang/5.png">
-<meta property="og:image" content="http://blog.zhaojinxi.top/2020/12/06/NOIP2020-shan-xi-mi-huo-xing-wei-dai-shang/6.png">
-<meta property="og:image" content="http://blog.zhaojinxi.top/2020/12/06/NOIP2020-shan-xi-mi-huo-xing-wei-dai-shang/7.png">
-<meta property="og:image" content="http://blog.zhaojinxi.top/2020/12/06/NOIP2020-shan-xi-mi-huo-xing-wei-dai-shang/8.png">
-<meta property="og:image" content="http://blog.zhaojinxi.top/2020/12/06/NOIP2020-shan-xi-mi-huo-xing-wei-dai-shang/9.png">
-<meta property="og:image" content="http://blog.zhaojinxi.top/2020/12/06/NOIP2020-shan-xi-mi-huo-xing-wei-dai-shang/10.png">
-<meta property="og:image" content="http://blog.zhaojinxi.top/2020/12/06/NOIP2020-shan-xi-mi-huo-xing-wei-dai-shang/11.png">
-<meta property="og:image" content="http://blog.zhaojinxi.top/2020/12/06/NOIP2020-shan-xi-mi-huo-xing-wei-dai-shang/12.png">
-<meta property="og:image" content="http://blog.zhaojinxi.top/2020/12/06/NOIP2020-shan-xi-mi-huo-xing-wei-dai-shang/13.png">
-<meta property="og:image" content="http://blog.zhaojinxi.top/2020/12/06/NOIP2020-shan-xi-mi-huo-xing-wei-dai-shang/14.png">
-<meta property="og:image" content="http://blog.zhaojinxi.top/2020/12/06/NOIP2020-shan-xi-mi-huo-xing-wei-dai-shang/15.png">
-<meta property="og:image" content="http://blog.zhaojinxi.top/2020/12/06/NOIP2020-shan-xi-mi-huo-xing-wei-dai-shang/16.png">
-<meta property="og:image" content="http://blog.zhaojinxi.top/2020/12/06/NOIP2020-shan-xi-mi-huo-xing-wei-dai-shang/17.png">
-<meta property="og:image" content="http://blog.zhaojinxi.top/2020/12/06/NOIP2020-shan-xi-mi-huo-xing-wei-dai-shang/18.png">
-<meta property="og:image" content="http://blog.zhaojinxi.top/2020/12/06/NOIP2020-shan-xi-mi-huo-xing-wei-dai-shang/19.png">
-<meta property="og:image" content="http://blog.zhaojinxi.top/2020/12/06/NOIP2020-shan-xi-mi-huo-xing-wei-dai-shang/20.png">
-<meta property="og:image" content="http://blog.zhaojinxi.top/2020/12/06/NOIP2020-shan-xi-mi-huo-xing-wei-dai-shang/21.png">
-<meta property="og:image" content="http://blog.zhaojinxi.top/2020/12/06/NOIP2020-shan-xi-mi-huo-xing-wei-dai-shang/22.png">
-<meta property="og:image" content="http://blog.zhaojinxi.top/2020/12/06/NOIP2020-shan-xi-mi-huo-xing-wei-dai-shang/23.png">
-<meta property="article:published_time" content="2020-12-06T05:29:07.000Z">
-<meta property="article:modified_time" content="2022-07-07T05:25:28.871Z">
+<meta property="article:published_time" content="2023-02-25T10:37:52.000Z">
+<meta property="article:modified_time" content="2023-02-25T11:12:36.416Z">
 <meta property="article:author" content="zhjxaoini">
 <meta property="article:tag" content="OI">
+<meta property="article:tag" content="图论">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="http://blog.zhaojinxi.top/2020/12/06/NOIP2020-shan-xi-mi-huo-xing-wei-dai-shang/1.png">
 
 
-<link rel="canonical" href="http://blog.zhaojinxi.top/2020/12/06/NOIP2020-shan-xi-mi-huo-xing-wei-dai-shang/">
+<link rel="canonical" href="http://blog.zhaojinxi.top/2023/02/25/yi-zhong-gao-xiao-de-cun-tu-fang-shi-shu-zu-qian-xiang-xing/">
 
 
 
-<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"http://blog.zhaojinxi.top/2020/12/06/NOIP2020-shan-xi-mi-huo-xing-wei-dai-shang/","path":"2020/12/06/NOIP2020-shan-xi-mi-huo-xing-wei-dai-shang/","title":"NOIP2020 山 西 迷 惑 行 为 大 赏"}</script>
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"http://blog.zhaojinxi.top/2023/02/25/yi-zhong-gao-xiao-de-cun-tu-fang-shi-shu-zu-qian-xiang-xing/","path":"2023/02/25/yi-zhong-gao-xiao-de-cun-tu-fang-shi-shu-zu-qian-xiang-xing/","title":"一种高效的存图方式——数组前向星"}</script>
 
 <script class="next-config" data-name="calendar" type="application/json">""</script>
-<title>NOIP2020 山 西 迷 惑 行 为 大 赏 | zhjxaoini's Blog</title>
+<title>一种高效的存图方式——数组前向星 | zhjxaoini's Blog</title>
   
 
 
@@ -218,7 +195,7 @@
   
 
   <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://blog.zhaojinxi.top/2020/12/06/NOIP2020-shan-xi-mi-huo-xing-wei-dai-shang/">
+    <link itemprop="mainEntityOfPage" href="http://blog.zhaojinxi.top/2023/02/25/yi-zhong-gao-xiao-de-cun-tu-fang-shi-shu-zu-qian-xiang-xing/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.png">
@@ -231,12 +208,12 @@
     </span>
 
     <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
-      <meta itemprop="name" content="NOIP2020 山 西 迷 惑 行 为 大 赏 | zhjxaoini's Blog">
+      <meta itemprop="name" content="一种高效的存图方式——数组前向星 | zhjxaoini's Blog">
       <meta itemprop="description" content="">
     </span>
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
-          NOIP2020 山 西 迷 惑 行 为 大 赏
+          一种高效的存图方式——数组前向星
         </h1>
 
         <div class="post-meta-container">
@@ -247,7 +224,7 @@
       </span>
       <span class="post-meta-item-text">发表于</span>
 
-      <time title="创建时间：2020-12-06 13:29:07" itemprop="dateCreated datePublished" datetime="2020-12-06T13:29:07+08:00">2020-12-06</time>
+      <time title="创建时间：2023-02-25 18:37:52" itemprop="dateCreated datePublished" datetime="2023-02-25T18:37:52+08:00">2023-02-25</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -255,7 +232,7 @@
       </span>
       <span class="post-meta-item-text">分类于</span>
         <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/%E7%81%8C%E6%B0%B4/" itemprop="url" rel="index"><span itemprop="name">灌水</span></a>
+          <a href="/categories/%E7%AC%94%E8%AE%B0/" itemprop="url" rel="index"><span itemprop="name">笔记</span></a>
         </span>
     </span>
 
@@ -269,84 +246,15 @@
     
     
     <div class="post-body" itemprop="articleBody">
-        <p><del>本来以为 CSP 刷下去一波后，NOIP
-的迷惑行为会少很多，结果……</del></p>
-<hr />
-<img data-src="/2020/12/06/NOIP2020-shan-xi-mi-huo-xing-wei-dai-shang/1.png" class="">
-<img data-src="/2020/12/06/NOIP2020-shan-xi-mi-huo-xing-wei-dai-shang/2.png" class="">
-<p style="text-align:center">
-放 弃 人
-</p>
+        <p>此数据结构的正确名字为<strong>前向星</strong>，为了与链式前向星区别，本文中将其称为<strong>数组前向星</strong>。</p>
+<p>数组前向星是一个特殊的边集数组。将边按照起点排序，那么每个点的所有出边都存储在一个区间中，记下区间的范围即可。排序方式使用<strong>计数排序</strong>，时间复杂度为线性。</p>
+<p>其同时具备 vector
+和链式前向星的优点，既能保证遍历时内存访问连续，又不需要动态分配内存。</p>
 <span id="more"></span>
-<img data-src="/2020/12/06/NOIP2020-shan-xi-mi-huo-xing-wei-dai-shang/3.png" class="">
-<p style="text-align:center">
-隔 空 分 号 人
-</p>
-<img data-src="/2020/12/06/NOIP2020-shan-xi-mi-huo-xing-wei-dai-shang/4.png" class="">
-<p style="text-align:center">
-警 示 自 己 人
-</p>
-<img data-src="/2020/12/06/NOIP2020-shan-xi-mi-huo-xing-wei-dai-shang/5.png" class="">
-<img data-src="/2020/12/06/NOIP2020-shan-xi-mi-huo-xing-wei-dai-shang/6.png" class="">
-<p style="text-align:center">
-打 表 人 兼 不 会 算 g c d 人
-</p>
-<img data-src="/2020/12/06/NOIP2020-shan-xi-mi-huo-xing-wei-dai-shang/7.png" class="">
-<p style="text-align:center">
-R P + + 人
-</p>
-<img data-src="/2020/12/06/NOIP2020-shan-xi-mi-huo-xing-wei-dai-shang/8.png" class="">
-<p style="text-align:center">
-盲 猜 正 解 人
-</p>
-<img data-src="/2020/12/06/NOIP2020-shan-xi-mi-huo-xing-wei-dai-shang/9.png" class="">
-<img data-src="/2020/12/06/NOIP2020-shan-xi-mi-huo-xing-wei-dai-shang/10.png" class="">
-<img data-src="/2020/12/06/NOIP2020-shan-xi-mi-huo-xing-wei-dai-shang/11.png" class="">
-<img data-src="/2020/12/06/NOIP2020-shan-xi-mi-huo-xing-wei-dai-shang/12.png" class="">
-<p style="text-align:center">
-赛 时 吐 槽 人
-</p>
-<img data-src="/2020/12/06/NOIP2020-shan-xi-mi-huo-xing-wei-dai-shang/13.png" class="">
-<p style="text-align:center">
-输 出 样 例 人
-</p>
-<img data-src="/2020/12/06/NOIP2020-shan-xi-mi-huo-xing-wei-dai-shang/14.png" class="">
-<p style="text-align:center">
-缩 写 变 量 人
-</p>
-<img data-src="/2020/12/06/NOIP2020-shan-xi-mi-huo-xing-wei-dai-shang/15.png" class="">
-<p style="text-align:center">
-不 建 子 文 件 夹 人
-</p>
-<img data-src="/2020/12/06/NOIP2020-shan-xi-mi-huo-xing-wei-dai-shang/16.png" class="">
-<p style="text-align:center">
-迷 惑 代 码 人
-</p>
-<img data-src="/2020/12/06/NOIP2020-shan-xi-mi-huo-xing-wei-dai-shang/17.png" class="">
-<p style="text-align:center">
-移 花 接 木 人
-</p>
-<img data-src="/2020/12/06/NOIP2020-shan-xi-mi-huo-xing-wei-dai-shang/18.png" class="">
-<p style="text-align:center">
-重 复 定 义 人
-</p>
-<img data-src="/2020/12/06/NOIP2020-shan-xi-mi-huo-xing-wei-dai-shang/19.png" class="">
-<img data-src="/2020/12/06/NOIP2020-shan-xi-mi-huo-xing-wei-dai-shang/20.png" class="">
-<p style="text-align:center">
-指 s t r u c t 为 q u e u e 人
-</p>
-<img data-src="/2020/12/06/NOIP2020-shan-xi-mi-huo-xing-wei-dai-shang/21.png" class="">
-<p style="text-align:center">
-括 号 不 匹 配 人
-</p>
-<img data-src="/2020/12/06/NOIP2020-shan-xi-mi-huo-xing-wei-dai-shang/22.png" class="">
-<p style="text-align:center">
-样 例 人
-</p>
-<img data-src="/2020/12/06/NOIP2020-shan-xi-mi-huo-xing-wei-dai-shang/23.png" class="">
-<p style="text-align:center">
-注 释 人
-</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">int</span> to[MAXM];</span><br><span class="line"><span class="type">int</span> head[MAXN], tail[MAXN];</span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">build</span><span class="params">(<span class="type">int</span> n, <span class="type">int</span> m)</span> </span>&#123;</span><br><span class="line">    <span class="type">static</span> std::pair&lt;<span class="type">int</span>, <span class="type">int</span>&gt; edge[MAXM];</span><br><span class="line">    <span class="type">static</span> <span class="type">int</span> cnt[MAXN];</span><br><span class="line">    <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">1</span>, u, v; i &lt;= m; i++) &#123;</span><br><span class="line">        std::cin &gt;&gt; u &gt;&gt; v;</span><br><span class="line">        edge[i] = &#123;u, v&#125;;</span><br><span class="line">        cnt[u]++;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">1</span>; i &lt;= n; i++) &#123;</span><br><span class="line">        cnt[i] += cnt[i - <span class="number">1</span>];</span><br><span class="line">        head[i] = cnt[i - <span class="number">1</span>] + <span class="number">1</span>;</span><br><span class="line">        tail[i] = cnt[i];</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">1</span>; i &lt;= m; i++) &#123;</span><br><span class="line">        to[cnt[edge[i].first]--] = edge[i].second;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>另外，如果再写一个辅助结构体 Edge，便可以使用
+<code>for (auto&amp; v : Edge&#123;u&#125;)</code> 遍历点 u 的所有出边。</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">struct</span> <span class="title class_">Edge</span> &#123;</span><br><span class="line">    <span class="type">int</span> u;</span><br><span class="line">    <span class="function"><span class="type">int</span>* <span class="title">begin</span><span class="params">()</span> <span class="type">const</span> </span>&#123;<span class="keyword">return</span> to + head[u];&#125;</span><br><span class="line">    <span class="function"><span class="type">int</span>* <span class="title">end</span><span class="params">()</span> <span class="type">const</span> </span>&#123;<span class="keyword">return</span> to + tail[u] + <span class="number">1</span>;&#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
 
     </div>
 
@@ -378,7 +286,7 @@ R P + + 人
   </li>
   <li class="post-copyright-link">
       <strong>本文链接：</strong>
-      <a href="http://blog.zhaojinxi.top/2020/12/06/NOIP2020-shan-xi-mi-huo-xing-wei-dai-shang/" title="NOIP2020 山 西 迷 惑 行 为 大 赏">http://blog.zhaojinxi.top/2020/12/06/NOIP2020-shan-xi-mi-huo-xing-wei-dai-shang/</a>
+      <a href="http://blog.zhaojinxi.top/2023/02/25/yi-zhong-gao-xiao-de-cun-tu-fang-shi-shu-zu-qian-xiang-xing/" title="一种高效的存图方式——数组前向星">http://blog.zhaojinxi.top/2023/02/25/yi-zhong-gao-xiao-de-cun-tu-fang-shi-shu-zu-qian-xiang-xing/</a>
   </li>
   <li class="post-copyright-license">
     <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-nd/4.0/deed.zh" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-ND</a> 许可协议。转载请注明出处！
@@ -388,20 +296,18 @@ R P + + 人
 
           <div class="post-tags">
               <a href="/tags/OI/" rel="tag"><i class="fa fa-tag"></i> OI</a>
+              <a href="/tags/%E5%9B%BE%E8%AE%BA/" rel="tag"><i class="fa fa-tag"></i> 图论</a>
           </div>
 
         
 
           <div class="post-nav">
             <div class="post-nav-item">
-                <a href="/2020/11/14/CSP-S2020-shan-xi-mi-huo-xing-wei-dai-shang/" rel="prev" title="CSP-S2020 山 西 迷 惑 行 为 大 赏">
-                  <i class="fa fa-chevron-left"></i> CSP-S2020 山 西 迷 惑 行 为 大 赏
+                <a href="/2022/12/28/ju-zhen-yu-xiang-liang-xiang-cheng-zhong-de-shi-jian-chang-shu/" rel="prev" title="矩阵与向量相乘中的时间常数">
+                  <i class="fa fa-chevron-left"></i> 矩阵与向量相乘中的时间常数
                 </a>
             </div>
             <div class="post-nav-item">
-                <a href="/2022/12/28/ju-zhen-yu-xiang-liang-xiang-cheng-zhong-de-shi-jian-chang-shu/" rel="next" title="矩阵与向量相乘中的时间常数">
-                  矩阵与向量相乘中的时间常数 <i class="fa fa-chevron-right"></i>
-                </a>
             </div>
           </div>
     </footer>
